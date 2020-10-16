@@ -17,6 +17,7 @@
 /portalockerfile/
 /pygments/
 /pymdownx/
+/python-black/
 /python-jinja2/
 /python-markdown/
 /python-pywin32/
@@ -34,26 +35,19 @@
 /*33/
 /AceJump*/
 /AutomaticPackageReloader*/
-/AutoSetIndentation/
-/Bootstrap 4x Autocomplete/
 /Codecs/
 /ConvertToUTF8/
-/CTags/
+/CustomStatusMessage/
 /HTML-CSS-JS Prettify/
-/IntelliDocs/
 /JsPrettier/
 /LaTeXTools/
 /LiveReload/
 /LSP-*/
 /NSIS/
-/OmniMarkupPreviewer/
 /Pretty JSON/
-/Quokka/
-/SublimeAStyleFormatter/
+/SelfPatcher/
 /SublimeLinter*/
 !/SublimeLinter-contrib-markdownlint/
-/SublimeREPL/
-/TypeScript/
 /UnitTesting/
 
 /Terminal/*

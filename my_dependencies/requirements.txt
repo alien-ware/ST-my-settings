@@ -4,10 +4,11 @@
 black
 compdb
 compiledb
-httpx
 ipython
+isort
 jmespath
 jupyter
 markdown
 mypy
+pycln
 pymdown-extensions
