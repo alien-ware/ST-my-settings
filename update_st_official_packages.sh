@@ -2,6 +2,24 @@
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
+# ------ #
+# colors #
+# ------ #
+
+if [[ ${FORCE_COLOR} == "0" ]]; then
+    C_RESET=""
+    H_DEBUG="[DEBUG]"
+    H_INFO="[INFO]"
+    H_WARNING="[WARNING]"
+    H_ERROR="[ERROR]"
+else
+    C_RESET="\e[0m"
+    H_DEBUG="[\e[0;30;47mDEBUG${C_RESET}]"
+    H_INFO="[\e[0;37;44mINFO${C_RESET}]"
+    H_WARNING="[\e[0;30;43mWARNING${C_RESET}]"
+    H_ERROR="[\e[0;37;41mERROR${C_RESET}]"
+fi
+
 #---------#
 # configs #
 #---------#
@@ -110,7 +128,7 @@ for st_install_dir in "${ST_INSTALL_DIRS[@]}"; do
 
     if [ "${is_passed}" = "1" ]; then
         st_install_dir="$(realpath "${st_install_dir}")"
-        echo "[✔️] Found ST installation directory: ${st_install_dir}"
+        echo -e "${H_INFO} ✔️ Found ST installation directory: ${st_install_dir}"
         break
     else
         st_install_dir=""
@@ -118,7 +136,7 @@ for st_install_dir in "${ST_INSTALL_DIRS[@]}"; do
 done
 
 if [ "${st_install_dir}" = "" ]; then
-    echo "[❌] Could not find ST installation directory..."
+    echo -e "${H_ERROR} ❌ Could not find ST installation directory..."
     exit 1
 fi
 
@@ -128,14 +146,16 @@ st_pkgs_dir="${st_install_dir}/Packages"
 # read option: commit_ref #
 #-------------------------#
 
-echo "[💡] You can use either branch, tag or even SHA as the ref."
-echo "[💡] You can check out refs on '${PKG_GITHUB_URL}/commits'."
-read -erp "[❓] Which ref you want to used (such as 'v4134', default = 'master'): " commit_ref
+echo -e "${H_INFO} 💡 You can use either branch, tag or even SHA as the ref."
+echo -e "${H_INFO} 💡 You can check out refs on \"${PKG_GITHUB_URL}/commits\"."
+read -rp "$(echo -e "${H_INFO} ❓ Which ref you want to used (such as 'v4134', default = 'master'): ")" commit_ref
 
 if [ "${commit_ref}" = "" ]; then
     commit_ref="master"
-    echo "[⚠️] Use the default ref: ${commit_ref}"
+    echo -e "${H_WARNING} ⚠️ Use the default ref: ${commit_ref}"
 fi
+
+exit
 
 #-------------------------------#
 # get the latest package source #
@@ -144,13 +164,13 @@ fi
 repo_dir="${TEMP_DIR}/repo"
 commit_sha=""
 
-echo "[💬] Downloading repository..."
+echo -e "${H_INFO} 💬 Downloading repository..."
 
 if clone_repo_ref "${repo_dir}" "${PKG_REMOTE_REPO}" "${commit_ref}"; then
-    echo "[✔️] Download repository successfully!"
+    echo -e "${H_INFO} ✔️ Download repository successfully!"
     commit_sha="$(git rev-parse HEAD)"
 else
-    echo "[❌] Fail to checkout ref: ${commit_ref}"
+    echo -e "${H_ERROR} ❌ Fail to checkout ref: ${commit_ref}"
     exit 1
 fi
 
@@ -164,7 +184,7 @@ mkdir -p "${packed_pkgs_dir}"
 
 pushd "${repo_dir}" || exit
 
-echo "[💬] Pack up packages (${commit_sha})..."
+echo -e "${H_INFO} 💬 Pack up packages (${commit_sha})..."
 
 # traverse all packages in the repo
 for dir in */; do
@@ -172,7 +192,7 @@ for dir in */; do
 
     pkg_name=${dir%/}
 
-    echo "[📦] Packaging: ${pkg_name}"
+    echo -e "${H_DEBUG} 📦 Packaging: ${pkg_name}"
 
     zip -9rq "${packed_pkgs_dir}/${pkg_name}.sublime-package" . -z <<END
 Repository URL: ${PKG_REMOTE_REPO}
@@ -188,7 +208,7 @@ popd || exit
 # replace packages #
 #------------------#
 
-echo "[💬] Update ST packages to '${commit_ref}'..."
+echo -e "${H_INFO} 💬 Update ST packages to '${commit_ref}'..."
 cp -rf "${packed_pkgs_dir}"/*.sublime-package "${st_pkgs_dir}"
 
 #----------#
@@ -197,7 +217,7 @@ cp -rf "${packed_pkgs_dir}"/*.sublime-package "${st_pkgs_dir}"
 
 popd || exit
 
-echo "[🧹] Clean up..."
+echo -e "${H_INFO} 🧹 Clean up..."
 rm -rf "${TEMP_DIR}"
 
 #-----#
